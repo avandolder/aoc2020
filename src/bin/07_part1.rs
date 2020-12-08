@@ -4,22 +4,22 @@ use std::io::Read;
 use lazy_static::lazy_static;
 use regex::Regex;
 
-fn parse_rule(rule: &str) -> (&str, HashSet<&str>) {
+fn parse_rule(rule: &str) -> Option<(&str, HashSet<&str>)> {
     lazy_static! {
         static ref PAT1: Regex = Regex::new(r"(\w+ \w+) bags contain (no other bags|.*).").unwrap();
         static ref PAT2: Regex = Regex::new(r"(\d+) (\w+ \w+) bag").unwrap();
     }
 
-    let captures = PAT1.captures(rule).unwrap();
-    let outer_bag = captures.get(1).unwrap().as_str();
-    let inner_bags = match captures.get(2).unwrap().as_str() {
+    let captures = PAT1.captures(rule)?;
+    let outer_bag = captures.get(1)?.as_str();
+    let inner_bags = match captures.get(2)?.as_str() {
         "no other bags" => HashSet::new(),
         s => PAT2
             .captures_iter(s)
-            .map(|cap| cap.get(2).unwrap().as_str())
+            .filter_map(|cap| Some(cap.get(2)?.as_str()))
             .collect(),
     };
-    (outer_bag, inner_bags)
+    Some((outer_bag, inner_bags))
 }
 
 fn can_contain<'a>(
@@ -45,7 +45,11 @@ fn main() {
         .read_to_string(&mut input)
         .expect("Couldn't read from stdin");
 
-    let bags = input.lines().map(parse_rule).collect::<HashMap<_, _>>();
+    let bags = input
+        .lines()
+        .map(parse_rule)
+        .collect::<Option<HashMap<_, _>>>()
+        .unwrap();
 
     let needle = "shiny gold";
 
