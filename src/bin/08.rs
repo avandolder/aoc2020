@@ -75,12 +75,8 @@ fn part2(vm: &mut VM) -> i32 {
         }
 
         // Try to walk to end.
-        let mut seen = HashSet::new();
-
-        while !seen.contains(&vm.pc) {
-            seen.insert(vm.pc);
+        for _ in 0..vm.ops.len() {
             vm.step();
-
             if vm.pc == vm.ops.len() as i32 {
                 return vm.acc;
             }
