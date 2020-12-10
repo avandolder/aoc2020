@@ -41,9 +41,7 @@ fn part2(data: &Vec<i32>, invalid: i32) -> Option<i32> {
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut input = String::new();
-    std::io::stdin()
-        .read_to_string(&mut input)
-        .expect("Couldn't read from stdin");
+    std::io::stdin().read_to_string(&mut input)?;
 
     let data: Vec<i32> = input.lines().flat_map(str::parse).collect();
 
