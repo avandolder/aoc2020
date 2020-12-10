@@ -28,8 +28,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     std::io::stdin().read_to_string(&mut input)?;
 
     let mut data: Vec<i64> = input.lines().flat_map(str::parse).collect();
+    data.push(0);
     data.sort();
-    data.insert(0, 0);
     data.push(data[data.len() - 1] + 3);
 
     println!("{}", part1(&data));
