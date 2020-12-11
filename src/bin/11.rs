@@ -40,14 +40,11 @@ fn part1(mut seats: Seats) -> usize {
 
 fn part2(mut seats: Seats) -> usize {
     fn adj(seats: &Seats, mut itr: impl Iterator<Item = (i64, i64)>) -> i64 {
-        match itr
-            .find(|(i, j)| seats.contains_key(&(*i, *j)))
-            .map(|(i, j)| seats[&(i, j)])
-            .unwrap_or(Empty)
-        {
-            Full => 1,
-            _ => 0,
-        }
+        matches!(
+            itr.find(|(i, j)| seats.contains_key(&(*i, *j)))
+                .map(|(i, j)| seats[&(i, j)]),
+            Some(Full)
+        ) as i64
     }
 
     let w = seats.keys().max_by_key(|(_, j)| *j).unwrap().1;
