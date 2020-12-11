@@ -20,10 +20,7 @@ fn part1(mut seats: Seats) -> usize {
             .map(|((i, j), seat)| {
                 let adj_occ = iproduct!(i - 1..=i + 1, j - 1..=j + 1)
                     .filter(|(m, n)| m != i || n != j)
-                    .filter(|(i, j)| match seats.get(&(*i, *j)).unwrap_or(&Empty) {
-                        Full => true,
-                        _ => false,
-                    })
+                    .filter(|(i, j)| matches!(seats.get(&(*i, *j)).unwrap_or(&Empty), Full))
                     .count();
                 let seat = match seat {
                     Full if adj_occ >= 4 => Empty,
@@ -35,23 +32,16 @@ fn part1(mut seats: Seats) -> usize {
             .collect::<Seats>();
 
         if next_seats == seats {
-            break seats
-                .values()
-                .filter(|seat| match seat {
-                    Full => true,
-                    _ => false,
-                })
-                .count();
+            break seats.values().filter(|seat| matches!(seat, Full)).count();
         }
         seats = next_seats;
     }
 }
 
 fn part2(mut seats: Seats) -> usize {
-    fn adj(seats: &Seats, itr: impl Iterator<Item = (i64, i64)>) -> i64 {
+    fn adj(seats: &Seats, mut itr: impl Iterator<Item = (i64, i64)>) -> i64 {
         match itr
-            .skip_while(|(i, j)| !seats.contains_key(&(*i, *j)))
-            .next()
+            .find(|(i, j)| seats.contains_key(&(*i, *j)))
             .map(|(i, j)| seats[&(i, j)])
             .unwrap_or(Empty)
         {
@@ -85,13 +75,7 @@ fn part2(mut seats: Seats) -> usize {
             .collect::<Seats>();
 
         if next_seats == seats {
-            break seats
-                .values()
-                .filter(|seat| match seat {
-                    Full => true,
-                    _ => false,
-                })
-                .count();
+            break seats.values().filter(|seat| matches!(seat, Full)).count();
         }
         seats = next_seats;
         // print_seats(&seats);
@@ -110,7 +94,7 @@ fn print_seats(seats: &Seats) {
                 None => print!("."),
             }
         }
-        println!("");
+        println!();
     }
 }
 
